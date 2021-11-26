@@ -1,0 +1,16 @@
+---
+- include: preflight.yml
+  become: true
+  tags:
+    - victron_exporter_install
+    - victron_exporter_configure
+
+- include: install.yml
+  become: true
+  tags:
+    - victron_exporter_install
+
+- include: configure.yml
+  become: true
+  tags:
+    - victron_exporter_configure

@@ -1,0 +1,9 @@
+---
+- name: restart victron-exporter
+  become: true
+  service:
+    name: victron-exporter
+    state: restarted
+  tags:
+    - victron_exporter_run
+

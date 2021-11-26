@@ -1,0 +1,16 @@
+---
+- name: Check for required variables
+  block:
+    - name: "Checking for Victron Local Host"
+      assert:
+        that:
+          - victron_exporter_host is defined and (victron_exporter_username is not defined and victron_exporter_password is not defined)
+        fail_msg: "No local host configuration found."
+        success_msg: "Found local host."
+  rescue:
+    - name: "Checking for Victron remote credentials"
+      assert:
+        that:
+          - victron_exporter_host is not defined and (victron_exporter_username is defined and victron_exporter_password is defined)
+        fail_msg: "No local host found nor remote credentials. You need to provide remote credentials for Victron MQTT service."
+        success_msg: "Found credentials for Victron MQTT Service."

@@ -1,0 +1,16 @@
+---
+- name: create systemd service unit
+  template:
+    src: victron-exporter.service.j2
+    dest: /etc/systemd/system/victron-exporter.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart victron-exporter
+
+- name: Enable and start Victron Exporter systemd unit
+  systemd:
+    name: victron-exporter
+    enabled: true
+    state: started
+    daemon_reload: true

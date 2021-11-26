@@ -1,0 +1,35 @@
+#
+# Ansible managed
+#
+[Unit]
+Description=Victron Exporter for Prometheus
+Documentation=https://github.com/suprememoocow/victron-exporter
+After=network-online.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/victron-exporter.pid
+User=victron-exporter
+Group=victron-exporter
+PermissionsStartOnly=true
+ExecStart=/usr/local/bin/victron-exporter \
+  {% if victron_exporter_username is defined and victron_exporter_password is defined %}
+  -mqtt.password {{ victron_exporter_password }} \
+  -mqtt.username {{ victron_exporter_username }} \
+  {% elif victron_exporter_host is defined %}
+  -mqtt.host {{ victron_exporter_host }} \
+  {%- endif %}
+
+  -mqtt.client_prefix {{ victron_exporter_client_prefix }} \
+  -victron.poll_interval {{ victron_exporter_poll_interval_duration }} \
+  -mqtt.secure {{ victron_exporter_secure }} \
+  -mqtt.port {{ victron_exporter_port }} \
+  -web.listen-address {{ victron_exporter_address }}
+
+SyslogIdentifier=victron-exporter
+KillMode=process
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

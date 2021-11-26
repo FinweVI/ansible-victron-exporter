@@ -1,0 +1,9 @@
+---
+victron_exporter_version: 0.2.0
+victron_exporter_repository: "github.com/suprememoocow/victron-exporter"
+
+victron_exporter_address: "127.0.0.1:9226"
+victron_exporter_port: 8883
+victron_exporter_client_prefix: victron_exporter
+victron_exporter_poll_interval_duration: 10s
+victron_exporter_secure: "true"

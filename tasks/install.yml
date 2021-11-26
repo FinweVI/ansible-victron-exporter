@@ -1,0 +1,49 @@
+---
+
+- name: create victron-exporter system group
+  group:
+    name: victron-exporter
+    system: true
+    state: present
+
+- name: create victron-exporter system user
+  user:
+    name: victron-exporter
+    system: true
+    shell: "/sbin/nologin"
+    group: victron-exporter
+    createhome: false
+
+- name: install victron-exporter
+  block:
+    - name: download victron-exporter binary to local folder
+      become: false
+      get_url:
+        url: "https://{{ victron_exporter_repository }}/releases/download/v{{ victron_exporter_version }}/victron-exporter_{{ victron_exporter_version }}_linux_{{ go_arch }}.tar.gz"
+        dest: "/tmp/victron-exporter_{{ victron_exporter_version }}_linux_{{ go_arch }}.tar.gz"
+        checksum: "sha256:https://{{ victron_exporter_repository }}/releases/download/v{{ victron_exporter_version }}/checksums.txt"
+      register: _download_archive
+      until: _download_archive is succeeded
+      retries: 5
+      delay: 2
+      delegate_to: localhost
+      check_mode: false
+
+    - name: unpack victron-exporter binaries
+      become: false
+      unarchive:
+        src: "/tmp/victron-exporter_{{ victron_exporter_version }}_linux_{{ go_arch }}.tar.gz"
+        dest: "/tmp"
+        creates: "/tmp/victron-exporter"
+      delegate_to: localhost
+      check_mode: false
+
+    - name: propagate official victron-exporter binary
+      copy:
+        src: "/tmp/victron-exporter"
+        dest: "/usr/local/bin/victron-exporter"
+        mode: 0755
+        owner: root
+        group: root
+      notify:
+        - restart victron-exporter
